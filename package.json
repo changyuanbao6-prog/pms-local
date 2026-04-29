@@ -4,8 +4,10 @@
   "type": "module",
   "description": "本地化酒店PMS系统 - 流光青旅专用",
   "scripts": {
+    "install-deps": "npm install",
     "start": "node server/index.js",
-    "dev": "node server/index.js"
+    "dev": "node server/index.js",
+    "build": "npm install"
   },
   "main": "server/index.js"
 }
