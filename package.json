@@ -1,0 +1,11 @@
+{
+  "name": "pms-local",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "本地化酒店PMS系统 - 流光青旅专用",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js"
+  },
+  "main": "server/index.js"
+}

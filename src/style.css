@@ -1,0 +1,32 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+.el-header { background: #409eff; color: white; display: flex; align-items: center; }
+.el-header h1 { font-size: 18px; font-weight: 600; }
+.menu-logo { font-size: 22px; margin-right: 12px; }
+.stat-card { text-align: center; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.stat-card .number { font-size: 32px; font-weight: 700; color: #409eff; }
+.stat-card .label { color: #909399; font-size: 14px; margin-top: 4px; }
+.el-aside { background: #fff; }
+.page-container { padding: 20px; }
+.card-header { display: flex; justify-content: space-between; align-items: center; }
+.order-tag { margin: 2px; }
+.channel-tag { font-weight: 600; }
+.calendar-room { display: flex; align-items: center; border-bottom: 1px solid #eee; min-height: 44px; }
+.calendar-room .room-info { width: 100px; flex-shrink: 0; padding: 8px; }
+.calendar-room .room-cells { display: flex; flex: 1; overflow-x: auto; }
+.calendar-cell { flex: 1; min-width: 80px; height: 44px; border-right: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; position: relative; }
+.calendar-cell:hover { background: #ecf5ff; }
+.calendar-cell.booked { background: #e8f4ff; cursor: pointer; }
+.calendar-cell .order-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+.calendar-date-header { display: flex; background: #fafafa; border-bottom: 2px solid #409eff; position: sticky; top: 0; z-index: 10; }
+.calendar-date-header .date-cell { flex: 1; min-width: 80px; text-align: center; padding: 6px 0; border-right: 1px solid #f0f0f0; font-size: 12px; }
+.calendar-date-header .date-cell.today { background: #fef0f0; color: #f56c6c; font-weight: 700; }
+.calendar-date-header .date-cell.weekend { color: #909399; }
+.calendar-grid { overflow-x: auto; }
+.calendar-rooms-container { border: 1px solid #ebeef5; border-radius: 8px; background: white; }
+.login-container { height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.login-card { background: white; padding: 40px; border-radius: 16px; width: 360px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.login-card h1 { color: #409eff; margin-bottom: 8px; font-size: 24px; }
+.login-card .subtitle { color: #909399; margin-bottom: 30px; font-size: 14px; }
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.page-header h2 { font-size: 20px; color: #303133; }
