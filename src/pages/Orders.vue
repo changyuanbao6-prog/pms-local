@@ -96,8 +96,8 @@
         </el-form-item>
         <el-form-item label="备注"><el-input v-model="form.notes" type="textarea" :rows="2" /></el-form-item>
         <el-form-item v-if="form.payment_method === '支付宝'" label="支付宝付款">
-        <el-button type="primary" :loading="payLoading" @click="handleAlipay">立即发起支付</el-button>
-        <span v-if="alipayTradeNo" style="margin-left:10px;color:green">✅ 已发起，交易号：{{ alipayTradeNo }}</span>
+          <el-button type="primary" :loading="payLoading" @click="handleAlipay">立即发起支付</el-button>
+          <span v-if="alipayTradeNo" style="margin-left:10px;color:green">✅ 已发起，交易号：{{ alipayTradeNo }}</span>
         </el-form-item>
       </el-form>
       <template #footer>
