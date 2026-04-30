@@ -8,9 +8,11 @@ import { initDB } from './db.js';
 import authRoutes from './routes/auth.js';
 import roomRoutes from './routes/rooms.js';
 import orderRoutes from './routes/orders.js';
+import paymentRoutes from './routes/payments.js';
 import channelRoutes from './routes/channels.js';
 import statsRoutes from './routes/stats.js';
 import importRoutes from './routes/import.js';
+import payRouter from './routes/pay.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..').replace(/\\/g, '/');
@@ -34,9 +36,11 @@ initDB();
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/payments', paymentRoutes);
 app.use('/api/channels', channelRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/import', importRoutes);
+app.use('/api/pay', payRouter);
 
 // 健康检查
 app.get('/api/health', (req, res) => res.json({ ok: true }));

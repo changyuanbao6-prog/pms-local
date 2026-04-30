@@ -101,6 +101,83 @@ router.put('/:id', (req, res) => {
   res.json({ ok: true });
 });
 
+// =============================================
+// GET /:id/order-payment
+// 获取指定订单的支付信息
+// =============================================
+router.get('/:id/order-payment', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: '未登录' });
+  const order = db.prepare('SELECT id, guest_name, room_no, total_price, payment_status, pay_no, paid_at FROM orders WHERE id = ?').get(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  res.json({ order });
+});
+
+// =============================================
+// POST /:id/request-payment
+// 为订单发起模拟支付（生成支付单）
+// =============================================
+router.post('/:id/request-payment', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: '未登录' });
+
+  const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  if (order.payment_status === 'paid') return res.status(400).json({ error: '该订单已支付' });
+
+  const { method } = req.body;
+  const payNo = `PMS${Date.now()}${order.id}`;
+  const qrcodeData = `mock://pay?pay_no=${payNo}&amount=${order.total_price}&method=${method || 'wechat_scan'}`;
+
+  // 记录支付单
+  db.prepare(`
+    INSERT OR REPLACE INTO payments (order_id, pay_no, method, amount, status, qrcode_url, created_at)
+    VALUES (?, ?, ?, ?, 'pending', ?, CURRENT_TIMESTAMP)
+  `).run(order.id, payNo, method || 'wechat_scan', order.total_price, qrcodeData);
+
+  // 更新订单支付单号
+  db.prepare(`UPDATE orders SET pay_no = ?, payment_status = 'pending' WHERE id = ?`).run(payNo, req.params.id);
+
+  res.json({ ok: true, pay_no: payNo, qrcode_url: qrcodeData, expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString() });
+});
+
+// =============================================
+// POST /:id/confirm-payment
+// 模拟回调：确认支付成功（测试用）
+// =============================================
+router.post('/:id/confirm-payment', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: '未登录' });
+
+  const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  if (order.payment_status === 'paid') return res.status(400).json({ error: '该订单已支付' });
+
+  const tradeNo = `WX${Date.now()}`;
+
+  db.prepare(`
+    UPDATE payments SET status = 'success', trade_no = ?, paid_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+    WHERE order_id = ? AND status = 'pending'
+  `).run(tradeNo, req.params.id);
+
+  db.prepare(`
+    UPDATE orders SET payment_status = 'paid', paid_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `).run(req.params.id);
+
+  res.json({ ok: true, trade_no: tradeNo });
+});
+
+// =============================================
+// POST /:id/cancel-payment
+// 取消支付单
+// =============================================
+router.post('/:id/cancel-payment', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: '未登录' });
+
+  db.prepare(`UPDATE payments SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP WHERE order_id = ? AND status = 'pending'`).run(req.params.id);
+  db.prepare(`UPDATE orders SET payment_status = 'unpaid', updated_at = CURRENT_TIMESTAMP WHERE id = ?`).run(req.params.id);
+
+  res.json({ ok: true });
+});
+
 // 删除订单
 router.delete('/:id', (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: '未登录' });

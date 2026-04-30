@@ -132,6 +132,29 @@ export function initDB() {
     console.log('✓ 房间初始化完成 (26个床位)');
   }
 
+  // 支付记录表
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS payments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      order_id INTEGER,
+      pay_no TEXT UNIQUE NOT NULL,
+      method TEXT NOT NULL,
+      amount REAL NOT NULL,
+      status TEXT DEFAULT 'pending',
+      trade_no TEXT DEFAULT '',
+      qrcode_url TEXT DEFAULT '',
+      paid_at DATETIME,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (order_id) REFERENCES orders(id)
+    )
+  `);
+
+  // 更新 orders 表：增加 payment_status 字段（如果不存在）
+  try { db.exec(`ALTER TABLE orders ADD COLUMN payment_status TEXT DEFAULT 'unpaid'`); } catch(e) { /* 字段已存在 */ }
+  try { db.exec(`ALTER TABLE orders ADD COLUMN pay_no TEXT DEFAULT ''`); } catch(e) { /* 字段已存在 */ }
+  try { db.exec(`ALTER TABLE orders ADD COLUMN paid_at DATETIME`); } catch(e) { /* 字段已存在 */ }
+
   // 初始化渠道
   const channelCount = db.prepare('SELECT COUNT(*) as c FROM channels').get().c;
   if (channelCount === 0) {
