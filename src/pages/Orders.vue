@@ -62,7 +62,7 @@
         layout="total, prev, pager, next" style="margin-top:12px" @current-change="loadOrders" />
     </el-card>
     
-    <!-- 新建/编辑弹窗（同Calendar类似，简略版） -->
+    <!-- 新建/编辑弹窗 -->
     <el-dialog v-model="dialogVisible" :title="editing?.id ? '编辑订单' : '新建订单'" width="520px" :close-on-click-modal="false">
       <el-form :model="form" label-width="90px" size="default">
         <el-form-item label="客人姓名" required><el-input v-model="form.guest_name" /></el-form-item>
@@ -109,33 +109,6 @@
 </template>
 
 <script setup>
-async function handleAlipay() {
-  if (!form.value.total_price || form.value.total_price <= 0) {
-    ElMessage.warning('请先填写订单总价');
-    return;
-  }
-  payLoading.value = true;
-  try {
-    const orderId = 'ORDER_' + Date.now();
-    const res = await fetch('/api/pay/create', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        orderId,
-        amount: String(form.value.total_price),
-        subject: `${form.value.guest_name} - ${form.value.room_no}号房`,
-      }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
-    alipayTradeNo.value = data.tradeNo;
-    ElMessage.success('支付宝订单创建成功，交易号：' + data.tradeNo);
-  } catch (e) {
-    ElMessage.error('发起支付失败：' + e.message);
-  } finally {
-    payLoading.value = false;
-  }
-}
 import { ref, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import dayjs from 'dayjs';
@@ -188,6 +161,34 @@ function calcNights() { if (form.value.check_in && form.value.check_out) { const
 function openNew() { editing.value = null; form.value = { guest_name:'',guest_phone:'',room_no:'',room_type_name:'',check_in:'',check_out:'',nights:1,channel_id:null,channel_name:'自来客',channel_order_no:'',total_price:0,payment_method:'当面结',status:'confirmed',notes:'' }; dialogVisible.value = true; }
 function viewOrder(row) { editing.value = row; Object.assign(form.value, row, { channel_id: row.channel_id || null }); dialogVisible.value = true; }
 function editOrder(row) { viewOrder(row); }
+
+async function handleAlipay() {
+  if (!form.value.total_price || form.value.total_price <= 0) {
+    ElMessage.warning('请先填写订单总价');
+    return;
+  }
+  payLoading.value = true;
+  try {
+    const orderId = 'ORDER_' + Date.now();
+    const res = await fetch('/api/pay/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId,
+        amount: String(form.value.total_price),
+        subject: `${form.value.guest_name} - ${form.value.room_no}号房`,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    alipayTradeNo.value = data.tradeNo;
+    ElMessage.success('支付宝订单创建成功，交易号：' + data.tradeNo);
+  } catch (e) {
+    ElMessage.error('发起支付失败：' + e.message);
+  } finally {
+    payLoading.value = false;
+  }
+}
 
 async function submitOrder() {
   if (!form.value.guest_name || !form.value.room_no || !form.value.check_in || !form.value.check_out) { ElMessage.warning('请填写完整信息'); return; }
