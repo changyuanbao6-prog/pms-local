@@ -95,6 +95,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="备注"><el-input v-model="form.notes" type="textarea" :rows="2" /></el-form-item>
+<el-form-item v-if="form.payment_method === '支付宝'" label="支付宝付款">
+  <el-button type="primary" :loading="payLoading" @click="handleAlipay">立即发起支付</el-button>
+  <span v-if="alipayTradeNo" style="margin-left:10px;color:green">✅ 已发起，交易号：{{ alipayTradeNo }}</span>
+</el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible=false">取消</el-button>
@@ -105,6 +109,33 @@
 </template>
 
 <script setup>
+async function handleAlipay() {
+  if (!form.value.total_price || form.value.total_price <= 0) {
+    ElMessage.warning('请先填写订单总价');
+    return;
+  }
+  payLoading.value = true;
+  try {
+    const orderId = 'ORDER_' + Date.now();
+    const res = await fetch('/api/pay/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId,
+        amount: String(form.value.total_price),
+        subject: `${form.value.guest_name} - ${form.value.room_no}号房`,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    alipayTradeNo.value = data.tradeNo;
+    ElMessage.success('支付宝订单创建成功，交易号：' + data.tradeNo);
+  } catch (e) {
+    ElMessage.error('发起支付失败：' + e.message);
+  } finally {
+    payLoading.value = false;
+  }
+}
 import { ref, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import dayjs from 'dayjs';
@@ -116,6 +147,8 @@ const loading = ref(false);
 const dialogVisible = ref(false);
 const editing = ref(null);
 const saving = ref(false);
+const payLoading = ref(false);
+const alipayTradeNo = ref('');
 const page = ref(1);
 const pageSize = ref(50);
 const total = ref(0);
