@@ -152,7 +152,7 @@ router.post('/confirm', (req, res) => {
     
     const insert = db.prepare(`
       INSERT INTO orders (guest_name, guest_phone, room_no, room_type_name, check_in, check_out, nights, channel_id, channel_name, channel_order_no, total_price, payment_method, status, created_by)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+      VALUES (?, ?, ?, ?, ?, ?, COALESCE(?, 1), ?, ?, ?, ?, ?, 'pending', ?)
     `);
     
     for (const o of orders) {
