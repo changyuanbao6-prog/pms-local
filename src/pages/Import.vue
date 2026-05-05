@@ -49,7 +49,7 @@
         💡 提示：从{{ currentSource?.name }}后台导出订单时，请选择包含"宾客姓名/入住日期/离店日期/房号/金额"等字段的完整数据表格。
       </div>
       <div style="margin-top:20px;text-align:center">
-        <el-button @click="step = 1">返回</el-button>
+        <el-button @click="step = 0">返回</el-button>
         <el-button type="primary" :disabled="!rawData.length" @click="doPreview">解析并预览</el-button>
       </div>
     </el-card>

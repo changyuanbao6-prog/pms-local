@@ -81,7 +81,7 @@ async function loadChannelStats() {
 
 async function loadUpcoming() {
   const today = dayjs().format('YYYY-MM-DD');
-  const res = await fetch(`/api/orders?start=${today}&status=confirmed&pageSize=10`);
+  const res = await fetch(`/api/orders?start=${today}&status=pending,confirmed&pageSize=10`);
   const data = await res.json();
   upcomingOrders.value = data.orders;
 }

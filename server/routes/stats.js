@@ -27,7 +27,7 @@ router.get('/dashboard', (req, res) => {
   const monthRevenue = db.prepare(`SELECT COALESCE(SUM(total_price), 0) as s FROM orders WHERE check_in >= ? AND check_in <= ? AND status != 'cancelled'`).get(monthStart, today).s;
   
   // 待入住订单
-  const upcomingOrders = db.prepare(`SELECT COUNT(*) as c FROM orders WHERE check_in >= ? AND status = 'confirmed'`).get(today).c;
+  const upcomingOrders = db.prepare(`SELECT COUNT(*) as c FROM orders WHERE check_in >= ? AND status IN ('pending', 'confirmed')`).get(today).c;
   
   // 总房间数
   const totalRooms = db.prepare('SELECT COUNT(*) as c FROM rooms WHERE status = ?').get('active').c;

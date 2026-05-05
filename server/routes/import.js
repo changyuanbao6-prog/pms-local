@@ -125,12 +125,15 @@ router.post('/preview', (req, res) => {
       if (!check_in) errors.push('缺少入住日期');
       if (!check_out) errors.push('缺少离店日期');
       
+      // 按来源设置支付方式
+      const payment_method = source === 'ctrip' ? '携程代收' : source === 'meituan' ? '美团代收' : source === 'douyin' ? '抖音代收' : '当面结';
+
       return {
         row: i + 2, // Excel行号(从2开始,1是表头)
         guest_name, guest_phone, room_no, room_type_name,
         check_in, check_out, nights, total_price,
         channel_id: channelId, channel_name: channelName,
-        channel_order_no, errors, source
+        channel_order_no, payment_method, errors, source
       };
     });
     
@@ -148,8 +151,8 @@ router.post('/confirm', (req, res) => {
     let imported = 0, skipped = 0, errors = [];
     
     const insert = db.prepare(`
-      INSERT INTO orders (guest_name, guest_phone, room_no, room_type_name, check_in, check_out, nights, channel_id, channel_name, channel_order_no, total_price, payment_method, created_by)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '携程代收', ?)
+      INSERT INTO orders (guest_name, guest_phone, room_no, room_type_name, check_in, check_out, nights, channel_id, channel_name, channel_order_no, total_price, payment_method, status, created_by)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
     `);
     
     for (const o of orders) {
@@ -168,7 +171,7 @@ router.post('/confirm', (req, res) => {
       
       insert.run(o.guest_name, o.guest_phone || '', o.room_no, o.room_type_name || '',
                  o.check_in, o.check_out, o.nights, o.channel_id, o.channel_name,
-                 o.channel_order_no || '', o.total_price, req.session.userId);
+                 o.channel_order_no || '', o.total_price, o.payment_method || '当面结', req.session.userId);
       imported++;
     }
     

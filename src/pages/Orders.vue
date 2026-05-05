@@ -18,6 +18,7 @@
         <el-form-item label="房间"><el-input v-model="filter.room_no" placeholder="房间号" style="width:100px" /></el-form-item>
         <el-form-item label="状态">
           <el-select v-model="filter.status" placeholder="全部" clearable style="width:110px">
+            <el-option label="待入住" value="pending" />
             <el-option label="已确认" value="confirmed" />
             <el-option label="已离店" value="checked_out" />
             <el-option label="已取消" value="cancelled" />
@@ -46,7 +47,8 @@
         <el-table-column prop="payment_method" label="付款" width="100" />
         <el-table-column label="状态" width="80">
           <template #default="{ row }">
-            <el-tag v-if="row.status==='confirmed'" type="success" size="small">已确认</el-tag>
+            <el-tag v-if="row.status==='pending'" type="warning" size="small">待入住</el-tag>
+            <el-tag v-else-if="row.status==='confirmed'" type="success" size="small">已确认</el-tag>
             <el-tag v-else-if="row.status==='checked_out'" size="small">已离店</el-tag>
             <el-tag v-else type="info" size="small">已取消</el-tag>
           </template>
@@ -89,6 +91,7 @@
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="form.status" style="width:100%">
+            <el-option label="待入住" value="pending" />
             <el-option label="已确认" value="confirmed" />
             <el-option label="已离店" value="checked_out" />
             <el-option label="已取消" value="cancelled" />

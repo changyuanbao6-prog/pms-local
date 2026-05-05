@@ -23,7 +23,11 @@ router.get('/', (req, res) => {
   if (end) { where.push('check_out <= ?'); params.push(end); }
   if (room_no) { where.push('room_no = ?'); params.push(room_no); }
   if (channel_id) { where.push('channel_id = ?'); params.push(parseInt(channel_id)); }
-  if (status) { where.push('status = ?'); params.push(status); }
+  if (status) {
+    const statusList = status.split(',').map(s => s.trim());
+    where.push(`status IN (${statusList.map(() => '?').join(',')})`);
+    params.push(...statusList);
+  }
   
   const whereSQL = where.length ? 'WHERE ' + where.join(' AND ') : '';
   
