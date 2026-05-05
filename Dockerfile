@@ -4,7 +4,7 @@ WORKDIR /app
 
 # 先复制 package.json 再安装，避免每次都重新安装
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm ci
 
 # 复制源码
 COPY . .
