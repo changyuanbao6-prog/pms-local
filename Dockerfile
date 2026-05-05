@@ -10,7 +10,7 @@ RUN npm ci
 COPY . .
 
 # 构建前端（此时 dist 已被 gitignore，nixpacks 不会再触发）
-RUN npm run build
+RUN chmod +x node_modules/.bin/vite && npm run build
 
 EXPOSE 3000
 ENV PORT=3000
