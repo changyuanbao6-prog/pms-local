@@ -134,9 +134,9 @@ function getRowClass({ row }) {
 async function handleFileChange(file) {
   fileList.value = [file];
   const buffer = await file.raw.arrayBuffer();
-  const workbook = xlsx.read(buffer, { type: 'array' });
+  const workbook = XLSX.read(buffer, { type: 'array' });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  rawData.value = xlsx.utils.sheet_to_json(sheet, { defval: '' });
+  rawData.value = XLSX.utils.sheet_to_json(sheet, { defval: '' });
 }
 
 async function doPreview() {
