@@ -1,2 +1,10 @@
+
+# Railway 使用 nixpacks 自动构建
+[phases.setup]
+cmds = ["npm install"]
+
 [phases.build]
-cmds = ["npm install --include=dev", "npm run build"]
+cmds = ["npm run build"]
+
+[start]
+cmd = "node server/index.js"
